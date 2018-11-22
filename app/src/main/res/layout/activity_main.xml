@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.rfid.uhfsdktest.MainActivity">
+
+    <Button
+        android:id="@+id/test_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点击进入门禁测试"/>
+
+    <Button
+        android:id="@+id/work_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="读写器状态" />
+
+    <Button
+        android:id="@+id/start_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="EPC盘点" />
+
+    <Button
+        android:id="@+id/start_gpio_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="GPIO盘点" />
+
+    <Button
+        android:id="@+id/stop_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="停止盘点" />
+
+    <TextView
+        android:id="@+id/epc"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="40dp"
+        android:text="EPC"></TextView>
+    <TextView
+        android:id="@+id/gpio"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="40dp"
+        android:text="GPIO">
+    </TextView>
+
+
+
+</LinearLayout>
