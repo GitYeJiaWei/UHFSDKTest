@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.rfid.common.ActivityCollecter;
+
 /**
  * Created by YJW on 2018/1/8.
  */

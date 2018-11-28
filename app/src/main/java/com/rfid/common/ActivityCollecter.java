@@ -1,4 +1,4 @@
-package com.rfid.uhfsdktest;
+package com.rfid.common;
 
 import android.app.Activity;
 
