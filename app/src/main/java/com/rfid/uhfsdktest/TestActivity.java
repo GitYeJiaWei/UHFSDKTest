@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class TestActivity extends BaseActivity {
+public class TestActivity extends AppCompatActivity {
 
     private RfidHelper helper;
     private Button bt_set, bt_start, bt_reset;
@@ -294,14 +295,14 @@ public class TestActivity extends BaseActivity {
         helper.isRfiderWork(1);
     }
 
-    @Override
+/*    @Override
     public void onBackPressed() {
         super.onBackPressed();
         //记得destory
         if (helper != null) {
             helper.destroy();
         }
-    }
+    }*/
 
     /**
      * 点击空白区域隐藏键盘.

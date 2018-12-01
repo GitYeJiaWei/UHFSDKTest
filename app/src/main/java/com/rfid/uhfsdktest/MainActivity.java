@@ -2,13 +2,14 @@ package com.rfid.uhfsdktest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import com.rfid.permission.PermissionsActivity;
 import com.rfid.permission.PermissionsChecker;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends AppCompatActivity {
 
     private Button manage_bt;
     private PermissionsChecker mPermissionsChecker; // 权限检测器
@@ -60,8 +61,13 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        System.exit(0);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        //记得destory
     }
 }
