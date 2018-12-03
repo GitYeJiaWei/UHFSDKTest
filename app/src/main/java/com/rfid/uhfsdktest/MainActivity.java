@@ -11,7 +11,7 @@ import com.rfid.permission.PermissionsChecker;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button manage_bt;
+    private Button manage_bt,check_bt,binding_bt;
     private PermissionsChecker mPermissionsChecker; // 权限检测器
     private static final int REQUEST_CODE = 0; // 请求码
 
@@ -21,9 +21,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         manage_bt = (Button) findViewById(R.id.manage_bt);
+        check_bt = (Button) findViewById(R.id.check_bt);
+        binding_bt = (Button) findViewById(R.id.binding_bt);
 
 
         manage_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,TestActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        check_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,CheckActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        binding_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,TestActivity.class);

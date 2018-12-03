@@ -34,12 +34,14 @@ public class TestActivity extends AppCompatActivity {
 
     private RfidHelper helper;
     private Button bt_set, bt_start, bt_reset;
-    private TextView tv_total,tv_tian;
+    private TextView tv_total_ready;
+    private TextView tv_tian;
+    private TextView tv_total_real;
     private ListView lv_list;
     private ACache aCache = null;
     private ConcurrentHashMap<String, EPC> map = new ConcurrentHashMap<>();
     private Myadapter myadapter;
-    private String set1, set2, set3, set4 = null;
+
     private static final String TAG = "TESTANS";
 
     @Override
@@ -51,7 +53,8 @@ public class TestActivity extends AppCompatActivity {
         bt_set = (Button) findViewById(R.id.bt_set);
         bt_start = (Button) findViewById(R.id.bt_start);
         bt_reset = (Button) findViewById(R.id.bt_reset);
-        tv_total = (TextView) findViewById(R.id.tv_total);
+        tv_total_ready = (TextView) findViewById(R.id.tv_total_ready);
+        tv_total_real = (TextView) findViewById(R.id.tv_total_real);
         tv_tian = (TextView) findViewById(R.id.tv_tian);
         lv_list = (ListView) findViewById(R.id.lv_list);
 
@@ -59,14 +62,14 @@ public class TestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //读标签
-                if (bt_start.getText().toString().trim().equals("开始测试")) {
+                if (bt_start.getText().toString().trim().equals("开始")) {
                     //开始读标签
                     helper.startInventroy();
-                    bt_start.setText("停止测试");
+                    bt_start.setText("停止");
                 } else {
                     //停止读标签和停止感应模块
                     helper.stopInventroyAndGpio();
-                    bt_start.setText("开始测试");
+                    bt_start.setText("开始");
                 }
             }
         });
@@ -76,7 +79,8 @@ public class TestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 map.clear();
-                tv_total.setText("0");
+                tv_total_real.setText("0");
+                tv_total_ready.setText("0");
                 myadapter.clearData();
             }
         });
@@ -91,98 +95,8 @@ public class TestActivity extends AppCompatActivity {
 
         myadapter = new Myadapter(this);
         lv_list.setAdapter(myadapter);
+
     }
-
-    //初始化并弹出对话框方法
-    private void showDialog() {
-        View view = LayoutInflater.from(this).inflate(R.layout.cw_location_dialog_dong, null, false);
-        final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
-
-        Button btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
-        Button btn_agree = (Button) view.findViewById(R.id.btn_agree);
-        final CheckBox cb1 = (CheckBox) view.findViewById(R.id.cb_1);
-        final CheckBox cb2 = (CheckBox) view.findViewById(R.id.cb_2);
-        final CheckBox cb3 = (CheckBox) view.findViewById(R.id.cb_3);
-        final CheckBox cb4 = (CheckBox) view.findViewById(R.id.cb_4);
-        final EditText et1 = (EditText) view.findViewById(R.id.et_1);
-        final EditText et2 = (EditText) view.findViewById(R.id.et_2);
-        final EditText et3 = (EditText) view.findViewById(R.id.et_3);
-        final EditText et4 = (EditText) view.findViewById(R.id.et_4);
-
-        cb1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cb1.isChecked()) {
-                    et1.setEnabled(true);
-                } else {
-                    et1.setEnabled(false);
-                }
-            }
-        });
-
-        cb2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cb2.isChecked()) {
-                    et2.setEnabled(true);
-                } else {
-                    et2.setEnabled(false);
-                }
-            }
-        });
-
-        cb3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cb3.isChecked()) {
-                    et3.setEnabled(true);
-                } else {
-                    et3.setEnabled(false);
-                }
-            }
-        });
-
-        cb4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cb4.isChecked()) {
-                    et4.setEnabled(true);
-                } else {
-                    et4.setEnabled(false);
-                }
-            }
-        });
-
-
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        btn_agree.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                set1 = et1.getText().toString().trim();
-                set2 = et2.getText().toString().trim();
-                set3 = et3.getText().toString().trim();
-                set4 = et4.getText().toString().trim();
-                aCache.put("key1", set1);
-                aCache.put("key2", set2);
-                aCache.put("key3", set3);
-                aCache.put("key4", set4);
-                reHelp();
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-
-        //此处设置位置窗体大小，我这里设置为了手机屏幕宽度的3/4
-        dialog.getWindow().setLayout((ScreenUtils.getScreenWidth(this) / 4 * 3), LinearLayout.LayoutParams.WRAP_CONTENT);
-    }
-
 
     @Override
     protected void onStart() {
@@ -194,10 +108,10 @@ public class TestActivity extends AppCompatActivity {
         if (helper != null) {
             helper.destroy();
         }
-        set1 = aCache.getAsString("key1");
-        set2 = aCache.getAsString("key2");
-        set3 = aCache.getAsString("key3");
-        set4 = aCache.getAsString("key4");
+        String set1 = aCache.getAsString("key1");
+        String set2 = aCache.getAsString("key2");
+        String set3 = aCache.getAsString("key3");
+        String set4 = aCache.getAsString("key4");
 
         Map<Integer, Byte> map1 = new HashMap<>();
         if (set1 != null && !set1.equals("")) {
@@ -223,8 +137,8 @@ public class TestActivity extends AppCompatActivity {
         int a = 0;
         for (Integer key : map1.keySet()) {
             setPowers[a] = map1.get(key);
-            setAns[a] = Byte.valueOf(key+"");
-            sb.append(key+1+"  ");
+            setAns[a] = Byte.valueOf(key + "");
+            sb.append(key + 1 + "  ");
             a++;
         }
 
@@ -259,7 +173,8 @@ public class TestActivity extends AppCompatActivity {
                     a++;
                 }
                 myadapter.updateDatas(epcList);
-                tv_total.setText(a + "");
+                tv_total_real.setText(a + "");
+                tv_total_ready.setText(a + "");
             }
 
             /**
@@ -295,14 +210,107 @@ public class TestActivity extends AppCompatActivity {
         helper.isRfiderWork(1);
     }
 
-/*    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        //记得destory
-        if (helper != null) {
-            helper.destroy();
-        }
-    }*/
+    public void showDialog() {
+        View view = LayoutInflater.from(this).inflate(R.layout.cw_location_dialog_dong, null, false);
+        final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
+
+        Button btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
+        Button btn_agree = (Button) view.findViewById(R.id.btn_agree);
+        final CheckBox cb1 = (CheckBox) view.findViewById(R.id.cb_1);
+        final CheckBox cb2 = (CheckBox) view.findViewById(R.id.cb_2);
+        final CheckBox cb3 = (CheckBox) view.findViewById(R.id.cb_3);
+        final CheckBox cb4 = (CheckBox) view.findViewById(R.id.cb_4);
+        final EditText et1 = (EditText) view.findViewById(R.id.et_1);
+        final EditText et2 = (EditText) view.findViewById(R.id.et_2);
+        final EditText et3 = (EditText) view.findViewById(R.id.et_3);
+        final EditText et4 = (EditText) view.findViewById(R.id.et_4);
+
+        cb1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cb1.isChecked()) {
+                    et1.setEnabled(true);
+                    et1.setFocusable(true);
+                    et1.setFocusableInTouchMode(true);
+                    et1.requestFocus();
+                } else {
+                    et1.setEnabled(false);
+                }
+            }
+        });
+
+        cb2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cb2.isChecked()) {
+                    et2.setEnabled(true);
+                    et2.setFocusable(true);
+                    et2.setFocusableInTouchMode(true);
+                    et2.requestFocus();
+                } else {
+                    et2.setEnabled(false);
+                }
+            }
+        });
+
+        cb3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cb3.isChecked()) {
+                    et3.setEnabled(true);
+                    et3.setFocusable(true);
+                    et3.setFocusableInTouchMode(true);
+                    et3.requestFocus();
+                } else {
+                    et3.setEnabled(false);
+                }
+            }
+        });
+
+        cb4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cb4.isChecked()) {
+                    et4.setEnabled(true);
+                    et4.setFocusable(true);
+                    et4.setFocusableInTouchMode(true);
+                    et4.requestFocus();
+                } else {
+                    et4.setEnabled(false);
+                }
+            }
+        });
+
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_agree.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String set1 = et1.getText().toString().trim();
+                String set2 = et2.getText().toString().trim();
+                String set3 = et3.getText().toString().trim();
+                String set4 = et4.getText().toString().trim();
+                aCache.put("key1", set1);
+                aCache.put("key2", set2);
+                aCache.put("key3", set3);
+                aCache.put("key4", set4);
+                reHelp();
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
+        //此处设置位置窗体大小，我这里设置为了手机屏幕宽度的3/4
+        dialog.getWindow().setLayout((ScreenUtils.getScreenWidth(this) / 2 * 1), LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
 
     /**
      * 点击空白区域隐藏键盘.
@@ -356,7 +364,6 @@ public class TestActivity extends AppCompatActivity {
             im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
-
 
     @Override
     protected void onDestroy() {

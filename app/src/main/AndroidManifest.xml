@@ -2,12 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rfid.uhfsdktest">
 
-    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <!--这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <!--往内存中写入文件需要写入权限，并在程序中设置权限访问-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!-- 往内存中写入文件需要写入权限，并在程序中设置权限访问 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".AppApplication"
@@ -26,9 +26,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".TestActivity"></activity>
-        <activity
-            android:name="com.rfid.permission.PermissionsActivity"/>
+        <activity android:name=".TestActivity" />
+        <activity android:name="com.rfid.permission.PermissionsActivity" />
+        <activity android:name=".CheckActivity"></activity>
     </application>
 
 </manifest>

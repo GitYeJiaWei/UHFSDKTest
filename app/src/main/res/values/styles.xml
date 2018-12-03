@@ -6,6 +6,11 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowSoftInputMode">adjustPan</item>
+        <!--
+        android:windowSoftInputMode="adjustPan"   键盘就会覆盖屏幕
+        android:windowSoftInputMode="stateVisible|adjustResize"   屏幕整体上移
+        -->
     </style>
     <!--弹出对话框-->
     <style name="LocatonDialogStyle" parent="@android:style/Theme.Dialog">

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-     android:orientation="vertical"
+    android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:layout_weight="6.5"
@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="出库"
+            android:text="检验"
             android:textSize="50sp"
             android:textColor="@color/green"/>
 
@@ -200,7 +200,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:text="明细表"
+                android:text="检验表"
                 android:gravity="center"
                 android:textSize="36sp"
                 android:paddingTop="5dp"

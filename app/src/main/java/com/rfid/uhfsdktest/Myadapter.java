@@ -79,6 +79,8 @@ public class Myadapter extends BaseAdapter {
             listItemView =new ListItemView();
             listItemView.num  = (TextView) convertView.findViewById(R.id.tv_epcNum);
             listItemView.total = (TextView) convertView.findViewById(R.id.tv_epc);
+            listItemView.plan = (TextView) convertView.findViewById(R.id.tv_plan);
+            listItemView.real = (TextView) convertView.findViewById(R.id.tv_real);
             //设置控件集到convertView
             convertView.setTag(listItemView);
         }
@@ -89,6 +91,8 @@ public class Myadapter extends BaseAdapter {
         final EPC m1=(EPC) this.getItem(position);
         listItemView.num.setText(position+1+"");
         listItemView.total.setText(m1.getEpc());
+        listItemView.plan.setText("1");
+        listItemView.real.setText("1");
         return convertView;
     }
 
@@ -97,6 +101,6 @@ public class Myadapter extends BaseAdapter {
      * 自定义控件集合
      */
     public final class ListItemView{
-        TextView total,num;
+        TextView total,num,plan,real;
     }
 }

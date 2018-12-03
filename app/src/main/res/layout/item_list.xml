@@ -8,24 +8,36 @@
 
     <TextView
         android:id="@+id/tv_epcNum"
-        android:layout_width="100dp"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="20dp"
         android:gravity="center"
-        android:text="1"
-        />
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="20dp"
-        android:background="#000000"
+        android:text="序号"
         />
 
     <TextView
         android:id="@+id/tv_epc"
-        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="20dp"
         android:gravity="center"
-        android:text="1324565"
+        android:text="规格/型号"
         />
+
+    <TextView
+        android:id="@+id/tv_plan"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:gravity="center"
+        android:text="计划数"/>
+
+    <TextView
+        android:id="@+id/tv_real"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:gravity="center"
+        android:text="实际数"/>
 
 </LinearLayout>
