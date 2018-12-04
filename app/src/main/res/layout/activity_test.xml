@@ -17,6 +17,7 @@
         android:weightSum="5">
 
         <TextView
+            android:id="@+id/tv_rb"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -53,14 +54,18 @@
                     android:gravity="right|center_vertical"/>
 
                 <EditText
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true"
+                    android:id="@+id/edt_num"
                     android:layout_weight="1.5"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/back_text"
                     android:hint="请输入单据号"
-                    android:gravity="left|center_vertical"/>
+                    android:gravity="center"/>
 
                 <Button
+                    android:id="@+id/bt_sure"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.5"

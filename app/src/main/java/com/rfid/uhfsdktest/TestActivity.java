@@ -2,25 +2,29 @@ package com.rfid.uhfsdktest;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
-
 import com.ioter.rfid.IReceiveTag;
 import com.ioter.rfid.RfidBuilder;
 import com.ioter.rfid.RfidHelper;
 import com.rfid.common.ACache;
+import com.rfid.common.EPC;
 import com.rfid.common.ScreenUtils;
 
 import java.util.ArrayList;
@@ -33,13 +37,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TestActivity extends AppCompatActivity {
 
     private RfidHelper helper;
-    private Button bt_set, bt_start, bt_reset;
-    private TextView tv_total_ready;
-    private TextView tv_tian;
-    private TextView tv_total_real;
+    private Button bt_set, bt_start, bt_reset,bt_sure;
+    private TextView tv_total_ready,tv_rb,tv_total_real,tv_tian;
+    private EditText edt_num;
     private ListView lv_list;
     private ACache aCache = null;
-    private ConcurrentHashMap<String, EPC> map = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, EPC> hashMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
     private Myadapter myadapter;
 
     private static final String TAG = "TESTANS";
@@ -50,6 +54,7 @@ public class TestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test);
         aCache = ACache.get(this);
 
+        tv_rb = (TextView) findViewById(R.id.tv_rb);
         bt_set = (Button) findViewById(R.id.bt_set);
         bt_start = (Button) findViewById(R.id.bt_start);
         bt_reset = (Button) findViewById(R.id.bt_reset);
@@ -57,6 +62,8 @@ public class TestActivity extends AppCompatActivity {
         tv_total_real = (TextView) findViewById(R.id.tv_total_real);
         tv_tian = (TextView) findViewById(R.id.tv_tian);
         lv_list = (ListView) findViewById(R.id.lv_list);
+        edt_num = (EditText) findViewById(R.id.edt_num);
+        bt_sure = (Button) findViewById(R.id.bt_sure);
 
         bt_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,12 +86,40 @@ public class TestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 map.clear();
+                hashMap.clear();
+                edt_num.setText("");
+                tv_total_real.setTextColor(Color.GREEN);
                 tv_total_real.setText("0");
                 tv_total_ready.setText("0");
                 myadapter.clearData();
             }
         });
 
+        bt_sure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //开始读标签
+
+            }
+        });
+
+        //获取到回车键时的监听
+        edt_num.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {//EditorInfo.IME_ACTION_SEARCH、EditorInfo.IME_ACTION_SEND等分别对应EditText的imeOptions属性
+                    //TODO回车键按下时要执行的操作
+                    //开始读标签
+                    bt_sure.setFocusable(true);
+                    bt_sure.setFocusableInTouchMode(true);
+                    bt_sure.requestFocus();
+                    View v1 = getCurrentFocus();      //得到当前页面的焦点,ps:有输入框的页面焦点一般会被输入框占据
+                    hideKeyboard(v1.getWindowToken());   //收起键盘
+
+                }
+                return false;
+            }
+        });
 
         bt_set.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +147,7 @@ public class TestActivity extends AppCompatActivity {
         String set2 = aCache.getAsString("key2");
         String set3 = aCache.getAsString("key3");
         String set4 = aCache.getAsString("key4");
+        String rb = aCache.getAsString("rb");
 
         Map<Integer, Byte> map1 = new HashMap<>();
         if (set1 != null && !set1.equals("")) {
@@ -142,6 +178,12 @@ public class TestActivity extends AppCompatActivity {
             a++;
         }
 
+        if (rb != null && !rb.equals("")){
+            tv_rb.setText(rb);
+        }else{
+            tv_rb.setText("出库");
+        }
+
         tv_tian.setText(sb.toString());
         helper = new RfidBuilder().setConnectType(RfidBuilder.COM_TYPE).setPort("dev/ttyS0").setBaudRate(115200).setWorkAnts(setAns).setWorkAntPowers(setPowers).setReceiveTagListener(new IReceiveTag()
                 //mHelper =  new RfidBuilder().setConnectType(RfidBuilder.IP_TYPE).setHost("192.168.31.188").setIpPort(8086).setWorkAnts(new byte[]{0}).setWorkAntPowers(new byte[]{25}).setReceiveTagListener(new IReceiveTag()
@@ -158,19 +200,41 @@ public class TestActivity extends AppCompatActivity {
                 if (!map.containsKey(strEPC)) {
                     EPC epc = new EPC();
                     epc.setEpc(strEPC);
-                    map.put(strEPC, epc);
+                    if (strEPC.length()==8){
+                        if (strEPC.startsWith("A") || strEPC.startsWith("B") || strEPC.startsWith("C")){
+                            String key = strEPC.substring(0,1);
+                            epc.setEpc(key);
+                            if (!hashMap.containsKey(key)){
+                                epc.setNum(1);
+                                hashMap.put(key,epc);
+                            }else{
+                                int num =hashMap.get(key).getNum()+1;
+                                hashMap.get(key).setNum(num);
+                            }
+                        }else{
+                            epc.setNum(1);
+                            hashMap.put(strEPC,epc);
+                        }
+                    }else {
+                        epc.setNum(1);
+                        hashMap.put(strEPC,epc);
+                    }
+                    map.put(strEPC, strEPC);
                 } else {
                     return;
                 }
 
                 List<EPC> epcList = new ArrayList<>();
-                Iterator iterator = map.keySet().iterator();
+                Iterator iterator = hashMap.keySet().iterator();
                 int a = 0;
                 while (iterator.hasNext()) {
                     String key = (String) iterator.next();
-                    EPC epc = map.get(key);
+                    EPC epc = hashMap.get(key);
+                    if (epc.getEpc().length()>1){
+                        tv_total_real.setTextColor(Color.RED);
+                    }
+                    a+= epc.getNum();
                     epcList.add(epc);
-                    a++;
                 }
                 myadapter.updateDatas(epcList);
                 tv_total_real.setText(a + "");
@@ -216,6 +280,7 @@ public class TestActivity extends AppCompatActivity {
 
         Button btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
         Button btn_agree = (Button) view.findViewById(R.id.btn_agree);
+        final RadioButton  rb_in= (RadioButton) view.findViewById(R.id.rb_in);
         final CheckBox cb1 = (CheckBox) view.findViewById(R.id.cb_1);
         final CheckBox cb2 = (CheckBox) view.findViewById(R.id.cb_2);
         final CheckBox cb3 = (CheckBox) view.findViewById(R.id.cb_3);
@@ -300,6 +365,11 @@ public class TestActivity extends AppCompatActivity {
                 aCache.put("key2", set2);
                 aCache.put("key3", set3);
                 aCache.put("key4", set4);
+                if (rb_in.isChecked()){
+                    aCache.put("rb","入库");
+                }else{
+                    aCache.put("rb","出库");
+                }
                 reHelp();
                 dialog.dismiss();
             }

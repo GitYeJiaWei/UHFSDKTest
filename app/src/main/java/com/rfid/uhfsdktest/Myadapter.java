@@ -1,12 +1,15 @@
 package com.rfid.uhfsdktest;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.rfid.common.EPC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,10 +92,17 @@ public class Myadapter extends BaseAdapter {
         }
 
         final EPC m1=(EPC) this.getItem(position);
+        if (!(m1.getEpc().length()==1 &&(m1.getEpc().contains("A") || m1.getEpc().contains("B") || m1.getEpc().contains("C")))){
+            listItemView.total.setBackgroundColor(Color.RED);
+            listItemView.total.setTextColor(Color.WHITE);
+        }else {
+            listItemView.total.setBackgroundColor(Color.GREEN);
+            listItemView.total.setTextColor(Color.WHITE);
+        }
         listItemView.num.setText(position+1+"");
         listItemView.total.setText(m1.getEpc());
-        listItemView.plan.setText("1");
-        listItemView.real.setText("1");
+        listItemView.plan.setText(m1.getNum()+"");
+        listItemView.real.setText(m1.getNum()+"");
         return convertView;
     }
 

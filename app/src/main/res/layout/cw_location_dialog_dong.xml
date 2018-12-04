@@ -44,12 +44,15 @@
                 android:orientation="horizontal">
 
                 <RadioButton
+                    android:id="@+id/rb_out"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="出库"
+                    android:checked="true"
                     />
 
                 <RadioButton
+                    android:id="@+id/rb_in"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="入库"/>
