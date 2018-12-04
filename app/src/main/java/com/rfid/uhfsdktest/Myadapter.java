@@ -101,7 +101,7 @@ public class Myadapter extends BaseAdapter {
         }
         listItemView.num.setText(position+1+"");
         listItemView.total.setText(m1.getEpc());
-        listItemView.plan.setText(m1.getNum()+"");
+        listItemView.plan.setText(m1.list.size()+"");
         listItemView.real.setText(m1.getNum()+"");
         return convertView;
     }

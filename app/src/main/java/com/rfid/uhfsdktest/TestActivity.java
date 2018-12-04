@@ -20,12 +20,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.ioter.rfid.IReceiveTag;
 import com.ioter.rfid.RfidBuilder;
 import com.ioter.rfid.RfidHelper;
 import com.rfid.common.ACache;
 import com.rfid.common.EPC;
 import com.rfid.common.ScreenUtils;
+
+import junit.framework.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +49,7 @@ public class TestActivity extends AppCompatActivity {
     private ConcurrentHashMap<String, EPC> hashMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
     private Myadapter myadapter;
+    private ArrayList<Integer> scannedCodes = new ArrayList<Integer>();
 
     private static final String TAG = "TESTANS";
 
@@ -99,27 +104,30 @@ public class TestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //开始读标签
-
+                if (edt_num.getText().toString().equals("IOT123456")){
+                    SetNum();
+                }
             }
         });
 
-        //获取到回车键时的监听
-        edt_num.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+       /* edt_num.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {//EditorInfo.IME_ACTION_SEARCH、EditorInfo.IME_ACTION_SEND等分别对应EditText的imeOptions属性
                     //TODO回车键按下时要执行的操作
-                    //开始读标签
-                    bt_sure.setFocusable(true);
-                    bt_sure.setFocusableInTouchMode(true);
                     bt_sure.requestFocus();
-                    View v1 = getCurrentFocus();      //得到当前页面的焦点,ps:有输入框的页面焦点一般会被输入框占据
-                    hideKeyboard(v1.getWindowToken());   //收起键盘
-
+                    if (edt_num.getText().toString().equals("IOT123456")){
+                        SetNum();
+                    }
+                    // 隐藏键盘
+                    View view =getCurrentFocus();
+                    IBinder token = view.getWindowToken();
+                    ScreenUtils.hideKeyboard1(token, TestActivity.this);//调用方法判断是否需要隐藏键盘
                 }
                 return false;
             }
-        });
+        });*/
+
 
         bt_set.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,7 +182,7 @@ public class TestActivity extends AppCompatActivity {
         for (Integer key : map1.keySet()) {
             setPowers[a] = map1.get(key);
             setAns[a] = Byte.valueOf(key + "");
-            sb.append(key + 1 + "  ");
+            sb.append(key + 1 + "("+setPowers[a]+")  ");
             a++;
         }
 
@@ -204,12 +212,17 @@ public class TestActivity extends AppCompatActivity {
                         if (strEPC.startsWith("A") || strEPC.startsWith("B") || strEPC.startsWith("C")){
                             String key = strEPC.substring(0,1);
                             epc.setEpc(key);
-                            if (!hashMap.containsKey(key)){
+                            if (hashMap.containsKey(key)){
+                                if (hashMap.get(key).list.contains(strEPC)){
+                                    int num =hashMap.get(key).getNum()+1;
+                                    hashMap.get(key).setNum(num);
+                                }else {
+                                    epc.setNum(1);
+                                    hashMap.put(key,epc);
+                                }
+                            }else {
                                 epc.setNum(1);
-                                hashMap.put(key,epc);
-                            }else{
-                                int num =hashMap.get(key).getNum()+1;
-                                hashMap.get(key).setNum(num);
+                                hashMap.put(strEPC,epc);
                             }
                         }else{
                             epc.setNum(1);
@@ -224,21 +237,7 @@ public class TestActivity extends AppCompatActivity {
                     return;
                 }
 
-                List<EPC> epcList = new ArrayList<>();
-                Iterator iterator = hashMap.keySet().iterator();
-                int a = 0;
-                while (iterator.hasNext()) {
-                    String key = (String) iterator.next();
-                    EPC epc = hashMap.get(key);
-                    if (epc.getEpc().length()>1){
-                        tv_total_real.setTextColor(Color.RED);
-                    }
-                    a+= epc.getNum();
-                    epcList.add(epc);
-                }
-                myadapter.updateDatas(epcList);
-                tv_total_real.setText(a + "");
-                tv_total_ready.setText(a + "");
+                uplist();
             }
 
             /**
@@ -274,6 +273,7 @@ public class TestActivity extends AppCompatActivity {
         helper.isRfiderWork(1);
     }
 
+    //设置功率
     public void showDialog() {
         View view = LayoutInflater.from(this).inflate(R.layout.cw_location_dialog_dong, null, false);
         final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
@@ -381,59 +381,99 @@ public class TestActivity extends AppCompatActivity {
         dialog.getWindow().setLayout((ScreenUtils.getScreenWidth(this) / 2 * 1), LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
+    public void SetNum(){
+        EPC epc1 = new EPC();
+        epc1.setEpc("A");
+        epc1.setNum(0);
+        EPC epc2 = new EPC();
+        epc2.setEpc("B");
+        epc2.setNum(0);
+        EPC epc3 = new EPC();
+        epc3.setEpc("C");
+        epc3.setNum(0);
+        for (int i = 1; i < 16; i++) {
+            epc1.list.add("A000000"+i);
+        }
+        for (int i = 1; i < 11; i++) {
+            epc2.list.add("B000000"+i);
+        }
+        for (int i = 1; i < 11; i++) {
+            epc3.list.add("C000000"+i);
+        }
+        hashMap.put("A",epc1);
+        hashMap.put("B",epc2);
+        hashMap.put("C",epc3);
+        uplist();
+    }
 
-    /**
-     * 点击空白区域隐藏键盘.
-     */
+    private void uplist(){
+        List<EPC> epcList = new ArrayList<>();
+        Iterator iterator = hashMap.keySet().iterator();
+        int a = 0,b = 0;
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            EPC epc = hashMap.get(key);
+            if (epc.getEpc().length()>1){
+                tv_total_real.setTextColor(Color.RED);
+            }
+            a+= epc.list.size();
+            b+= epc.getNum();
+            epcList.add(epc);
+        }
+        myadapter.updateDatas(epcList);
+        tv_total_real.setText(b + "");
+        tv_total_ready.setText(a + "");
+    }
+
     @Override
-    public boolean dispatchTouchEvent(MotionEvent me) {
-        if (me.getAction() == MotionEvent.ACTION_DOWN) {  //把操作放在用户点击的时候
-            View v = getCurrentFocus();      //得到当前页面的焦点,ps:有输入框的页面焦点一般会被输入框占据
-            if (isShouldHideKeyboard(v, me)) { //判断用户点击的是否是输入框以外的区域
-                hideKeyboard(v.getWindowToken());   //收起键盘
-            }
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                View view = getCurrentFocus();
+                ScreenUtils.hideKeyboard(ev, view, TestActivity.this);//调用方法判断是否需要隐藏键盘
+                break;
+
+            default:
+                break;
         }
-        return super.dispatchTouchEvent(me);
+        return super.dispatchTouchEvent(ev);
     }
 
-    /**
-     * 根据EditText所在坐标和用户点击的坐标相对比，来判断是否隐藏键盘，因为当用户点击EditText时则不能隐藏
-     *
-     * @param v
-     * @param event
-     * @return
-     */
-    private boolean isShouldHideKeyboard(View v, MotionEvent event) {
-        if (v != null && (v instanceof EditText)) {  //判断得到的焦点控件是否包含EditText
-            int[] l = {0, 0};
-            v.getLocationInWindow(l);
-            int left = l[0],    //得到输入框在屏幕中上下左右的位置
-                    top = l[1],
-                    bottom = top + v.getHeight(),
-                    right = left + v.getWidth();
-            if (event.getX() > left && event.getX() < right
-                    && event.getY() > top && event.getY() < bottom) {
-                // 点击位置如果是EditText的区域，忽略它，不收起键盘。
-                return false;
-            } else {
-                return true;
-            }
+
+    //获取扫描枪的扫描数据
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode!= KeyEvent.KEYCODE_ENTER){ //扫码枪以回车为结束
+            scannedCodes.add(keyCode);
+        }else{ //结束
+            handleKeyCodes();
         }
-        // 如果焦点不是EditText则忽略
-        return false;
+        return super.onKeyDown(keyCode, event);
     }
 
-    /**
-     * 获取InputMethodManager，隐藏软键盘
-     *
-     * @param token
-     */
-    private void hideKeyboard(IBinder token) {
-        if (token != null) {
-            InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS);
+    private void handleKeyCodes(){
+        map.clear();
+        hashMap.clear();
+        edt_num.setText("");
+        tv_total_real.setTextColor(Color.GREEN);
+        tv_total_real.setText("0");
+        tv_total_ready.setText("0");
+        myadapter.clearData();
+
+        ScreenUtils fnString = new ScreenUtils();
+        String result = "";
+        boolean hasShift = false;
+        for(int keyCode : scannedCodes){
+            result += fnString.keyCodeToChar(keyCode, hasShift);
+            hasShift = (keyCode == KeyEvent.KEYCODE_SHIFT_LEFT);
         }
+        edt_num.setText(result);
+        if (edt_num.getText().toString().trim().equals("Iot123456")){
+            SetNum();
+        }
+        scannedCodes.clear();
     }
+
 
     @Override
     protected void onDestroy() {

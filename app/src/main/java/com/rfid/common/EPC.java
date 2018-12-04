@@ -1,6 +1,8 @@
 package com.rfid.common;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EPC implements Serializable{
     private String epc;
@@ -22,4 +24,6 @@ public class EPC implements Serializable{
     public void setNum(int num) {
         this.num = num;
     }
+
+    public List<String> list = new ArrayList<>();
 }
