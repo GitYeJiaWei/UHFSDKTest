@@ -93,11 +93,9 @@ public class Myadapter extends BaseAdapter {
 
         final EPC m1=(EPC) this.getItem(position);
         if (!(m1.getEpc().length()==1 &&(m1.getEpc().contains("A") || m1.getEpc().contains("B") || m1.getEpc().contains("C")))){
-            listItemView.total.setBackgroundColor(Color.RED);
-            listItemView.total.setTextColor(Color.WHITE);
+            listItemView.total.setTextColor(Color.RED);
         }else {
-            listItemView.total.setBackgroundColor(Color.GREEN);
-            listItemView.total.setTextColor(Color.WHITE);
+            listItemView.total.setTextColor(Color.GREEN);
         }
         listItemView.num.setText(position+1+"");
         listItemView.total.setText(m1.getEpc());

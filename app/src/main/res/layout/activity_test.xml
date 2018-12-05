@@ -69,12 +69,23 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.5"
-                    android:layout_marginLeft="200dp"
-                    android:layout_marginRight="200dp"
+                    android:layout_marginLeft="150dp"
+                    android:layout_marginRight="50dp"
                     android:background="@drawable/back_but"
                     android:textColor="@color/white"
                     android:textSize="@dimen/button"
                     android:text="确定"/>
+
+                <Button
+                    android:id="@+id/bt_clear"
+                    android:layout_weight="0.5"
+                    android:layout_width="0dp"
+                    android:layout_marginRight="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/back_but"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/button"
+                    android:text="清除"/>
 
             </LinearLayout>
 

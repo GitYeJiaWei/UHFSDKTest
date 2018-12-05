@@ -1,18 +1,14 @@
 package com.rfid.uhfsdktest;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -20,16 +16,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.ioter.rfid.IReceiveTag;
 import com.ioter.rfid.RfidBuilder;
 import com.ioter.rfid.RfidHelper;
 import com.rfid.common.ACache;
 import com.rfid.common.EPC;
 import com.rfid.common.ScreenUtils;
-
-import junit.framework.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TestActivity extends AppCompatActivity {
 
     private RfidHelper helper;
-    private Button bt_set, bt_start, bt_reset,bt_sure;
+    private Button bt_set, bt_start, bt_reset,bt_sure,bt_clear;
     private TextView tv_total_ready,tv_rb,tv_total_real,tv_tian;
     private EditText edt_num;
     private ListView lv_list;
@@ -69,6 +61,7 @@ public class TestActivity extends AppCompatActivity {
         lv_list = (ListView) findViewById(R.id.lv_list);
         edt_num = (EditText) findViewById(R.id.edt_num);
         bt_sure = (Button) findViewById(R.id.bt_sure);
+        bt_clear = (Button) findViewById(R.id.bt_clear);
 
         bt_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +79,7 @@ public class TestActivity extends AppCompatActivity {
             }
         });
 
-
+        //提交
         bt_reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,9 +97,25 @@ public class TestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //开始读标签
-                if (edt_num.getText().toString().equals("IOT123456")){
+                bt_sure.setFocusableInTouchMode(true);
+                bt_sure.setFocusable(true);
+                bt_sure.requestFocus();
+                if (edt_num.getText().toString().toUpperCase().trim().equals("IOT123456")){
                     SetNum();
                 }
+            }
+        });
+
+        bt_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                map.clear();
+                hashMap.clear();
+                edt_num.setText("");
+                tv_total_real.setTextColor(Color.GREEN);
+                tv_total_real.setText("0");
+                tv_total_ready.setText("0");
+                myadapter.clearData();
             }
         });
 
@@ -118,7 +127,7 @@ public class TestActivity extends AppCompatActivity {
                     bt_sure.requestFocus();
                     if (edt_num.getText().toString().equals("IOT123456")){
                         SetNum();
-                    }
+
                     // 隐藏键盘
                     View view =getCurrentFocus();
                     IBinder token = view.getWindowToken();
@@ -236,7 +245,6 @@ public class TestActivity extends AppCompatActivity {
                 } else {
                     return;
                 }
-
                 uplist();
             }
 
@@ -392,12 +400,18 @@ public class TestActivity extends AppCompatActivity {
         epc3.setEpc("C");
         epc3.setNum(0);
         for (int i = 1; i < 16; i++) {
+            if (i==3){
+                continue;
+            }
             epc1.list.add("A000000"+i);
         }
         for (int i = 1; i < 11; i++) {
             epc2.list.add("B000000"+i);
         }
         for (int i = 1; i < 11; i++) {
+            if (i==3){
+                continue;
+            }
             epc3.list.add("C000000"+i);
         }
         hashMap.put("A",epc1);
@@ -468,7 +482,7 @@ public class TestActivity extends AppCompatActivity {
             hasShift = (keyCode == KeyEvent.KEYCODE_SHIFT_LEFT);
         }
         edt_num.setText(result);
-        if (edt_num.getText().toString().trim().equals("Iot123456")){
+        if (edt_num.getText().toString().toUpperCase().trim().equals("IOT123456")){
             SetNum();
         }
         scannedCodes.clear();
