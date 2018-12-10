@@ -90,6 +90,8 @@ public class TestActivity extends AppCompatActivity {
                 tv_total_real.setText("0");
                 tv_total_ready.setText("0");
                 myadapter.clearData();
+
+                showReset();
             }
         });
 
@@ -119,7 +121,9 @@ public class TestActivity extends AppCompatActivity {
             }
         });
 
-       /* edt_num.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+       /* 获取enter 键的监听事件
+        edt_num.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {//EditorInfo.IME_ACTION_SEARCH、EditorInfo.IME_ACTION_SEND等分别对应EditText的imeOptions属性
@@ -389,6 +393,36 @@ public class TestActivity extends AppCompatActivity {
         dialog.getWindow().setLayout((ScreenUtils.getScreenWidth(this) / 2 * 1), LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
+
+    //提交订单
+    public void showReset(){
+        View view = LayoutInflater.from(this).inflate(R.layout.cw_reset_dialog_dong, null, false);
+        final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
+
+        Button btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
+        Button btn_agree = (Button) view.findViewById(R.id.btn_agree);
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        btn_agree.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
+        //此处设置位置窗体大小，我这里设置为了手机屏幕宽度的3/4
+        dialog.getWindow().setLayout((ScreenUtils.getScreenWidth(this) / 2 * 1), LinearLayout.LayoutParams.WRAP_CONTENT);
+
+    }
+
     public void SetNum(){
         EPC epc1 = new EPC();
         epc1.setEpc("A");
@@ -464,6 +498,7 @@ public class TestActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
 
     private void handleKeyCodes(){
         map.clear();
