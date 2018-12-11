@@ -219,29 +219,34 @@ public class TestActivity extends AppCompatActivity {
             public void onReceiveTags(String strEPC, String strRSSI, byte btAntId) {
                 Log.d("TAG", "epc:" + strEPC + "-----rssi:" + strRSSI + "----AntId:" + btAntId);
                 if (!map.containsKey(strEPC)) {
-                    EPC epc = new EPC();
-                    epc.setEpc(strEPC);
                     if (strEPC.length()==8){
                         if (strEPC.startsWith("A") || strEPC.startsWith("B") || strEPC.startsWith("C")){
                             String key = strEPC.substring(0,1);
-                            epc.setEpc(key);
                             if (hashMap.containsKey(key)){
                                 if (hashMap.get(key).list.contains(strEPC)){
                                     int num =hashMap.get(key).getNum()+1;
                                     hashMap.get(key).setNum(num);
                                 }else {
+                                    EPC epc = new EPC();
+                                    epc.setEpc(strEPC);
                                     epc.setNum(1);
                                     hashMap.put(key,epc);
                                 }
                             }else {
+                                EPC epc = new EPC();
+                                epc.setEpc(strEPC);
                                 epc.setNum(1);
                                 hashMap.put(strEPC,epc);
                             }
                         }else{
+                            EPC epc = new EPC();
+                            epc.setEpc(strEPC);
                             epc.setNum(1);
                             hashMap.put(strEPC,epc);
                         }
                     }else {
+                        EPC epc = new EPC();
+                        epc.setEpc(strEPC);
                         epc.setNum(1);
                         hashMap.put(strEPC,epc);
                     }
@@ -436,17 +441,28 @@ public class TestActivity extends AppCompatActivity {
         for (int i = 1; i < 16; i++) {
             if (i==3){
                 continue;
+            }if (i<10){
+                epc1.list.add("A000000"+i);
+            }else{
+                epc1.list.add("A00000"+i);
             }
-            epc1.list.add("A000000"+i);
         }
         for (int i = 1; i < 11; i++) {
-            epc2.list.add("B000000"+i);
+            if (i<10){
+                epc2.list.add("B000000"+i);
+            }else{
+                epc2.list.add("B00000"+i);
+            }
         }
         for (int i = 1; i < 11; i++) {
             if (i==3){
                 continue;
+            }if (i<10){
+                epc3.list.add("C000000"+i);
+            }else{
+                epc3.list.add("C00000"+i);
             }
-            epc3.list.add("C000000"+i);
+
         }
         hashMap.put("A",epc1);
         hashMap.put("B",epc2);
