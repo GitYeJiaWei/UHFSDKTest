@@ -250,7 +250,8 @@ public class RfidHelper
                 {
                     if (RfidHelper.this.connectType == RfidBuilder.COM_TYPE)
                     {
-                        return initRfidReader(connector.connectCom(mPort, mBaudRate));
+                        boolean a = initRfidReader(connector.connectCom(mPort, mBaudRate));
+                        return a;
                     } else if (RfidHelper.this.connectType == RfidBuilder.IP_TYPE)
                     {
                         return initRfidReader(connector.connect(host, ipPort));
