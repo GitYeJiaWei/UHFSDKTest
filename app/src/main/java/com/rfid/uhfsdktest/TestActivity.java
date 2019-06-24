@@ -24,6 +24,7 @@ import com.rfid.common.EPC;
 import com.rfid.common.ScreenUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -66,23 +67,21 @@ public class TestActivity extends AppCompatActivity {
         bt_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //读标签
-                if (bt_start.getText().toString().trim().equals("开始")) {
-                    //开始读标签
-                    helper.startInventroy();
-                    bt_start.setText("停止");
-                } else {
-                    //停止读标签和停止感应模块
-                    helper.stopInventroyAndGpio();
-                    bt_start.setText("开始");
-                }
+                initview();
             }
         });
+
+
 
         //提交
         bt_reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (bt_start.getText().toString().trim().equals("停止")) {
+                    //停止读标签和停止感应模块
+                    helper.stopInventroyAndGpio();
+                    bt_start.setText("开始");
+                }
                 map.clear();
                 hashMap.clear();
                 edt_num.setText("");
@@ -91,7 +90,6 @@ public class TestActivity extends AppCompatActivity {
                 tv_total_ready.setText("0");
                 myadapter.clearData();
 
-                showReset();
             }
         });
 
@@ -111,6 +109,11 @@ public class TestActivity extends AppCompatActivity {
         bt_clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (bt_start.getText().toString().trim().equals("停止")) {
+                    //停止读标签和停止感应模块
+                    helper.stopInventroyAndGpio();
+                    bt_start.setText("开始");
+                }
                 map.clear();
                 hashMap.clear();
                 edt_num.setText("");
@@ -120,27 +123,6 @@ public class TestActivity extends AppCompatActivity {
                 myadapter.clearData();
             }
         });
-
-
-       /* 获取enter 键的监听事件
-        edt_num.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {//EditorInfo.IME_ACTION_SEARCH、EditorInfo.IME_ACTION_SEND等分别对应EditText的imeOptions属性
-                    //TODO回车键按下时要执行的操作
-                    bt_sure.requestFocus();
-                    if (edt_num.getText().toString().equals("IOT123456")){
-                        SetNum();
-
-                    // 隐藏键盘
-                    View view =getCurrentFocus();
-                    IBinder token = view.getWindowToken();
-                    ScreenUtils.hideKeyboard1(token, TestActivity.this);//调用方法判断是否需要隐藏键盘
-                }
-                return false;
-            }
-        });*/
-
 
         bt_set.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,6 +134,19 @@ public class TestActivity extends AppCompatActivity {
         myadapter = new Myadapter(this);
         lv_list.setAdapter(myadapter);
 
+    }
+
+    private void initview(){
+        //读标签
+        if (bt_start.getText().toString().trim().equals("开始")) {
+            //开始读标签
+            helper.startInventroy();
+            bt_start.setText("停止");
+        } else {
+            //停止读标签和停止感应模块
+            helper.stopInventroyAndGpio();
+            bt_start.setText("开始");
+        }
     }
 
     @Override
@@ -192,10 +187,13 @@ public class TestActivity extends AppCompatActivity {
         byte[] setPowers = new byte[map1.size()];
         StringBuffer sb = new StringBuffer();
         int a = 0;
-        for (Integer key : map1.keySet()) {
-            setPowers[a] = map1.get(key);
-            setAns[a] = Byte.valueOf(key + "");
-            sb.append(key + 1 + "("+setPowers[a]+")  ");
+        Object[] key_arr = map1.keySet().toArray();
+        Arrays.sort(key_arr);
+        for (Object key2 : key_arr) {
+            int kk = (int) key2;
+            setPowers[a] = map1.get(kk);
+            setAns[a] = Byte.valueOf(kk + "");
+            sb.append(kk + 1 + "("+setPowers[a]+")  ");
             a++;
         }
 
@@ -207,7 +205,7 @@ public class TestActivity extends AppCompatActivity {
 
         tv_tian.setText(sb.toString());
         helper = new RfidBuilder().setConnectType(RfidBuilder.COM_TYPE).setPort("dev/ttyS1").setBaudRate(115200).setWorkAnts(setAns).setWorkAntPowers(setPowers).setReceiveTagListener(new IReceiveTag()
-                //mHelper =  new RfidBuilder().setConnectType(RfidBuilder.IP_TYPE).setHost("192.168.31.188").setIpPort(8086).setWorkAnts(new byte[]{0}).setWorkAntPowers(new byte[]{25}).setReceiveTagListener(new IReceiveTag()
+                //helper =  new RfidBuilder().setConnectType(RfidBuilder.IP_TYPE).setHost("192.168.31.188").setIpPort(8086).setWorkAnts(new byte[]{0,1,2,3}).setWorkAntPowers(new byte[]{25,25,25,25}).setReceiveTagListener(new IReceiveTag()
         {
             /**
              * 数据回调
@@ -220,7 +218,8 @@ public class TestActivity extends AppCompatActivity {
                 Log.d("TAG", "epc:" + strEPC + "-----rssi:" + strRSSI + "----AntId:" + btAntId);
                 if (!map.containsKey(strEPC)) {
                     if (strEPC.length()==8){
-                        if (strEPC.startsWith("A") || strEPC.startsWith("B") || strEPC.startsWith("C")){
+                        if (strEPC.startsWith("A00000") || strEPC.startsWith("B00000") || strEPC.startsWith("C00000")
+                                || strEPC.startsWith("D00000")|| strEPC.startsWith("E00000")){
                             String key = strEPC.substring(0,1);
                             if (hashMap.containsKey(key)){
                                 if (hashMap.get(key).list.contains(strEPC)){
@@ -239,16 +238,16 @@ public class TestActivity extends AppCompatActivity {
                                 hashMap.put(strEPC,epc);
                             }
                         }else{
-                            EPC epc = new EPC();
+                            /*EPC epc = new EPC();
                             epc.setEpc(strEPC);
                             epc.setNum(1);
-                            hashMap.put(strEPC,epc);
+                            hashMap.put(strEPC,epc);*/
                         }
                     }else {
-                        EPC epc = new EPC();
+                        /*EPC epc = new EPC();
                         epc.setEpc(strEPC);
                         epc.setNum(1);
-                        hashMap.put(strEPC,epc);
+                        hashMap.put(strEPC,epc);*/
                     }
                     map.put(strEPC, strEPC);
                 } else {
@@ -395,37 +394,7 @@ public class TestActivity extends AppCompatActivity {
         dialog.show();
 
         //此处设置位置窗体大小，我这里设置为了手机屏幕宽度的3/4
-        dialog.getWindow().setLayout((ScreenUtils.getScreenWidth(this) / 2 * 1), LinearLayout.LayoutParams.WRAP_CONTENT);
-    }
-
-
-    //提交订单
-    public void showReset(){
-        View view = LayoutInflater.from(this).inflate(R.layout.cw_reset_dialog_dong, null, false);
-        final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
-
-        Button btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
-        Button btn_agree = (Button) view.findViewById(R.id.btn_agree);
-
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        btn_agree.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-
-        //此处设置位置窗体大小，我这里设置为了手机屏幕宽度的3/4
-        dialog.getWindow().setLayout((ScreenUtils.getScreenWidth(this) / 2 * 1), LinearLayout.LayoutParams.WRAP_CONTENT);
-
+        dialog.getWindow().setLayout((ScreenUtils.getScreenWidth(this) * 3 / 4), LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
     public void SetNum(){
@@ -438,6 +407,12 @@ public class TestActivity extends AppCompatActivity {
         EPC epc3 = new EPC();
         epc3.setEpc("C");
         epc3.setNum(0);
+        EPC epc4 = new EPC();
+        epc4.setEpc("D");
+        epc4.setNum(0);
+        EPC epc5 = new EPC();
+        epc5.setEpc("E");
+        epc5.setNum(0);
         for (int i = 1; i < 16; i++) {
             if (i==3){
                 continue;
@@ -464,9 +439,27 @@ public class TestActivity extends AppCompatActivity {
             }
 
         }
+        for (int i = 1; i < 51; i++) {
+            if (i<10){
+                epc4.list.add("D000000"+i);
+            }else{
+                epc4.list.add("D00000"+i);
+            }
+
+        }
+        for (int i = 1; i < 51; i++) {
+            if (i<10){
+                epc5.list.add("E000000"+i);
+            }else{
+                epc5.list.add("E00000"+i);
+            }
+
+        }
         hashMap.put("A",epc1);
         hashMap.put("B",epc2);
         hashMap.put("C",epc3);
+        hashMap.put("D",epc4);
+        hashMap.put("E",epc5);
         uplist();
     }
 
